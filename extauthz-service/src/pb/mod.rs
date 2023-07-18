@@ -1,12 +1,12 @@
 pub mod envoy {
 
-    mod r#type {
+    pub mod r#type {
         pub mod v3 {
             include!("./envoy/type/v3/envoy.type.v3.rs");
         }
     }
 
-    mod config {
+    pub mod config {
         pub mod core {
             pub mod v3 {
                 include!("./envoy/config/core/v3/envoy.config.core.v3.rs");
@@ -23,7 +23,7 @@ pub mod envoy {
     }
 }
 
-mod google {
+pub mod google {
     pub mod rpc {
         include!("./google/rpc/google.rpc.rs");
     }
