@@ -17,7 +17,18 @@ services:
     # networks:
     #   - extauthz_net
 
-
+  nginx:
+    build:
+      context: ./nginx
+      args:
+        - SERVER_PORT=${NGINX_SERVER_PORT}
+    image: ${DOCKER_REGISTRY}/extauthz-rust.nginx:latest
+    container_name: extauthz-rust.nginx
+    ports:
+      - "80:${NGINX_SERVER_PORT}"
+    environment:
+      - SERVER_PORT=${NGINX_SERVER_PORT}
+      - SERVER_NAME=${NGINX_SERVER_NAME}
 
 # networks:
 #   extauthz_net:

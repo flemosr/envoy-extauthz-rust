@@ -1,0 +1,17 @@
+FROM nginx:mainline-alpine
+
+COPY ./conf /etc/nginx
+
+COPY ./html /var/www/html
+
+COPY ./docker-entrypoint.sh /
+
+RUN chmod +rx /docker-entrypoint.sh
+
+EXPOSE $SERVER_PORT
+
+# Already set on parent image, written here for clarity
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
+
+CMD ["nginx"]

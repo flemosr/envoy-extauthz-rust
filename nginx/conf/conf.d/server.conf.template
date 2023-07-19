@@ -1,0 +1,10 @@
+server {
+    listen ${SERVER_PORT};
+    listen [::]:${SERVER_PORT};
+    server_name ${SERVER_NAME};
+    
+    location / {
+        root /var/www/html;
+        index index.html;
+    }
+}
