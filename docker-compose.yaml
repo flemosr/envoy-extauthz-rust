@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+
+  extauthz-service:
+    build:
+      context: ./extauthz-service
+      args:
+        - PACKAGE_NAME=extauthz-service
+        - SERVER_PORT=${EXT_AUTH_Z_PORT}
+        - RELEASE_BUILD=${RELEASE_BUILD}
+    image: ${DOCKER_REGISTRY}/extauthz-rust.extauthz-service:latest
+    container_name: extauthz-rust.extauthz-service
+    ports:
+      - "8080:${EXT_AUTH_Z_PORT}"
+    environment:
+      - SERVER_PORT=${EXT_AUTH_Z_PORT}
+    # networks:
+    #   - extauthz_net
+
+
+
+# networks:
+#   extauthz_net:
+#     driver: bridge
+#     internal: true
+#   internet:
+#     driver: bridge
