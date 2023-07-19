@@ -6,7 +6,8 @@ use tonic::{transport::Server, Request, Response, Status};
 mod pb;
 
 use pb::envoy::config::core::v3::{
-    header_value_option::HeaderAppendAction, HeaderValue, HeaderValueOption, QueryParameter,
+    address::Address, header_value_option::HeaderAppendAction, HeaderValue, HeaderValueOption,
+    QueryParameter,
 };
 use pb::envoy::r#type::v3::HttpStatus;
 use pb::envoy::service::auth::v3::authorization_server::{Authorization, AuthorizationServer};
@@ -19,11 +20,18 @@ use pb::google::rpc;
 #[derive(Default)]
 struct MyServer;
 
-fn extract_inner_request_headers(
+fn get_external_request_data(
     request: Request<CheckRequest>,
-) -> Option<HashMap<String, String>> {
-    let inner = request.into_inner().attributes?.request?;
-    Some(inner.http?.headers)
+) -> Option<(String, HashMap<String, String>)> {
+    let attributes = request.into_inner().attributes?;
+
+    let client_address = match attributes.source?.address?.address? {
+        Address::SocketAddress(socket_address) => socket_address.address,
+        _ => return None,
+    };
+    let client_headers = attributes.request?.http?.headers;
+
+    Some((client_address, client_headers))
 }
 
 #[tonic::async_trait]
@@ -42,10 +50,11 @@ impl Authorization for MyServer {
 
         let mut http_response = HttpResponse::DeniedResponse(denied_http_response);
 
-        if let Some(headers) = extract_inner_request_headers(request) {
-            println!("{:?}", headers);
+        if let Some((client_address, client_headers)) = get_external_request_data(request) {
+            println!("\n{:?}", client_address);
+            println!("{:?}", client_headers);
 
-            if let Some(authorization) = headers.get("authorization") {
+            if let Some(authorization) = client_headers.get("authorization") {
                 println!("{:?}", authorization);
 
                 if authorization == "Bearer valid-token" {
