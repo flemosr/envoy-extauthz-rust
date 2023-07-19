@@ -46,7 +46,10 @@ services:
       - ADMIN_PORT=${ENVOY_ADMIN_PORT}
       - NGINX_SERVER_PORT=${NGINX_SERVER_PORT}
       - NGINX_SERVER_ADDRESS=nginx
+      - EXT_AUTHZ_SERVER_PORT=${EXT_AUTH_Z_PORT}
+      - EXT_AUTHZ_SERVER_ADDRESS=extauthz-service
     depends_on:
+      - extauthz-service
       - nginx
     networks:
       - extauthz_net

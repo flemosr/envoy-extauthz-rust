@@ -6,6 +6,8 @@ set -e
 envsubst '
     $SERVER_PORT
     $ADMIN_PORT
+    $EXT_AUTHZ_SERVER_ADDRESS
+    $EXT_AUTHZ_SERVER_PORT
     $NGINX_SERVER_ADDRESS
     $NGINX_SERVER_PORT
 ' < /etc/envoy/envoy.yaml.template > /etc/envoy/envoy.yaml

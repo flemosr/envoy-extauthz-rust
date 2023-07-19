@@ -56,7 +56,7 @@ impl Authorization for MyServer {
             let denied_http_response = DeniedHttpResponse {
                 status: Some(HttpStatus { code: 0 }),
                 headers: Vec::new(),
-                body: "".to_string(),
+                body: "REQUEST DENIED".to_string(),
             };
 
             HttpResponse::DeniedResponse(denied_http_response)

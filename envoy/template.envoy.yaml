@@ -27,18 +27,25 @@ static_resources:
               domains: ["*"]
               routes:
               - match: { prefix: "/" }
-                route: { cluster: nginx_cluster }
+                route: { cluster: nginx-cluster }
           http_filters:
+          - name: envoy.filters.http.ext_authz
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthz
+              grpc_service:
+                envoy_grpc:
+                  cluster_name: ext-authz-cluster
+              transport_api_version: V3
           - name: envoy.filters.http.router
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
   clusters:
-  - name: nginx_cluster
+  - name: nginx-cluster
     connect_timeout: 0.25s
     type: logical_dns
     lb_policy: round_robin
     load_assignment:
-      cluster_name: nginx_cluster
+      cluster_name: nginx-cluster
       endpoints:
       - lb_endpoints:
         - endpoint:
@@ -46,3 +53,20 @@ static_resources:
               socket_address:
                 address: $NGINX_SERVER_ADDRESS
                 port_value: $NGINX_SERVER_PORT
+  - name: ext-authz-cluster
+    type: logical_dns
+    typed_extension_protocol_options:
+      envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
+        "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
+        explicit_http_config:
+          http2_protocol_options: {}
+    load_assignment:
+      cluster_name: ext-authz-cluster
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: $EXT_AUTHZ_SERVER_ADDRESS
+                port_value: $EXT_AUTHZ_SERVER_PORT
+    connect_timeout: 0.25s
