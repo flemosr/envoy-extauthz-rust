@@ -1,0 +1,17 @@
+FROM envoyproxy/envoy-alpine:v1.21.0
+
+# Installing envsubst, used at the custom 'docker-entrypoint.sh'
+RUN apk add gettext
+
+COPY ./template.envoy.yaml /etc/envoy/envoy.yaml.template
+
+COPY ./docker-entrypoint.sh /
+
+RUN chmod +rx /docker-entrypoint.sh
+
+EXPOSE $ENVOY_SERVER_PORT $ENVOY_ADMIN_PORT
+
+# Already set on parent image, written here for clarity
+ENTRYPOINT ["/docker-entrypoint.sh"]
+
+CMD ["envoy", "-c", "/etc/envoy/envoy.yaml"]
