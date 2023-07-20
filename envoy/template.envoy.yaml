@@ -43,6 +43,7 @@ static_resources:
                 envoy_grpc:
                   cluster_name: ext-authz-cluster
               transport_api_version: V3
+              failure_mode_allow: false
           - name: envoy.filters.http.router
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
