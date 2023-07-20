@@ -2,8 +2,6 @@ FROM nginx:mainline-alpine
 
 COPY ./conf /etc/nginx
 
-COPY ./html /var/www/html
-
 COPY ./docker-entrypoint.sh /
 
 RUN chmod +rx /docker-entrypoint.sh

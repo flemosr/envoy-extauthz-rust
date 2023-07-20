@@ -4,7 +4,7 @@ server {
     server_name ${SERVER_NAME};
     
     location / {
-        root /var/www/html;
-        index index.html;
+        add_header Content-Type text/plain;
+        return 200 'DATA FROM NGINX SERVER';
     }
 }
