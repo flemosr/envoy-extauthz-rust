@@ -1,6 +1,6 @@
 [package]
 authors = ["Rafael Lemos <contact@flemosr.com"]
-name = "extauthz-service"
+name = "extauthz"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
