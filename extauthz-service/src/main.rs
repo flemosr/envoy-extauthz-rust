@@ -10,11 +10,11 @@ use pb::envoy::config::core::v3::{
     QueryParameter,
 };
 use pb::envoy::r#type::v3::HttpStatus;
-use pb::envoy::service::auth::v3::authorization_server::{Authorization, AuthorizationServer};
 use pb::envoy::service::auth::v3::{
-    check_response::HttpResponse, CheckRequest, CheckResponse, DeniedHttpResponse, OkHttpResponse,
+    authorization_server::{Authorization, AuthorizationServer},
+    check_response::HttpResponse,
+    CheckRequest, CheckResponse, DeniedHttpResponse, OkHttpResponse,
 };
-
 use pb::google::rpc;
 
 #[derive(Default)]
@@ -43,9 +43,9 @@ impl Authorization for MyServer {
         println!("{:?}", request);
 
         let denied_http_response = DeniedHttpResponse {
-            status: Some(HttpStatus { code: 0 }),
+            status: Some(HttpStatus { code: 403 }),
             headers: Vec::new(),
-            body: "REQUEST DENIED".to_string(),
+            body: "FORBIDDEN".to_string(),
         };
 
         let mut http_response = HttpResponse::DeniedResponse(denied_http_response);
@@ -62,8 +62,8 @@ impl Authorization for MyServer {
                     let ok_http_response = OkHttpResponse {
                         headers: vec![HeaderValueOption {
                             header: Some(HeaderValue {
-                                key: "header".to_string(),
-                                value: "value".to_string(),
+                                key: "extauthz-header".to_string(),
+                                value: "extauthz-value".to_string(),
                                 raw_value: Vec::new(),
                             }),
                             append: None, // Deprecated field
@@ -75,8 +75,8 @@ impl Authorization for MyServer {
                         response_headers_to_add: Vec::new(),
                         query_parameters_to_remove: Vec::new(),
                         query_parameters_to_set: vec![QueryParameter {
-                            key: "query_parameter".to_string(),
-                            value: "query_value".to_string(),
+                            key: "extauthz-query-param".to_string(),
+                            value: "extauthz-query-value".to_string(),
                         }],
                     };
 
