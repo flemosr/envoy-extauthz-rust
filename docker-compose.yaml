@@ -6,14 +6,14 @@ services:
       context: ./extauthz-service
       args:
         - PACKAGE_NAME=extauthz-service
-        - SERVER_PORT=${EXT_AUTH_Z_PORT}
+        - SERVER_PORT=${EXT_AUTHZ_PORT}
         - RELEASE_BUILD=${RELEASE_BUILD}
     image: ${DOCKER_REGISTRY}/extauthz-rust.extauthz-service:latest
     container_name: extauthz-rust.extauthz-service
     ports:
-      - "8080:${EXT_AUTH_Z_PORT}"
+      - "8080:${EXT_AUTHZ_PORT}"
     environment:
-      - SERVER_PORT=${EXT_AUTH_Z_PORT}
+      - SERVER_PORT=${EXT_AUTHZ_PORT}
     networks:
       - extauthz_net
 
@@ -46,7 +46,7 @@ services:
       - ADMIN_PORT=${ENVOY_ADMIN_PORT}
       - NGINX_SERVER_PORT=${NGINX_SERVER_PORT}
       - NGINX_SERVER_ADDRESS=nginx
-      - EXT_AUTHZ_SERVER_PORT=${EXT_AUTH_Z_PORT}
+      - EXT_AUTHZ_SERVER_PORT=${EXT_AUTHZ_PORT}
       - EXT_AUTHZ_SERVER_ADDRESS=extauthz-service
     depends_on:
       - extauthz-service
