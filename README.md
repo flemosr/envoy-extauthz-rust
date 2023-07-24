@@ -99,11 +99,11 @@ extauthz-rust.nginx  | ENVOY-INTERNAL-IP - - [21/Jul/2023:14:27:49 +0000] "GET /
 
 ## Proto File Sources
 
-+ [envoy/*](https://github.com/envoyproxy/envoy/tree/main/api/envoy)  
-+ [google/rpc/*](https://github.com/googleapis/googleapis/blob/master/google/rpc)  
-+ [udpa/annotations/*](https://github.com/cncf/udpa/tree/main/udpa/annotations)  
-+ [validate/validate.proto](https://github.com/bufbuild/protoc-gen-validate/blob/main/validate/validate.proto)  
-+ [xds/*](https://github.com/cncf/xds/tree/main/xds)  
++ [envoy/*](https://github.com/envoyproxy/envoy/blob/5badcfa6b6edd1868a7f62e446098d20365a87fa/api/envoy)  
++ [google/rpc/*](https://github.com/googleapis/googleapis/blob/07457fcce42d9521375a2e0bd5dcfb1785279955/google/rpc)  
++ [udpa/annotations/*](https://github.com/cncf/udpa/blob/c52dc94e7fbe6449d8465faaeda22c76ca62d4ff/udpa/annotations)  
++ [validate/validate.proto](https://github.com/bufbuild/protoc-gen-validate/blob/04e84b10ceef0008673460bcf06f036b2add8d80/validate/validate.proto)  
++ [xds/*](https://github.com/cncf/xds/blob/e9ce68804cb4e64cab5a52e3c8baf840d4ff87b7/xds)  
 
 ## License
 
