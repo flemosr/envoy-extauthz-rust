@@ -3,19 +3,12 @@ use std::env;
 
 use tonic::{transport::Server, Request, Response, Status};
 
-mod pb;
-
-use pb::envoy::config::core::v3::{
-    address::Address, header_value_option::HeaderAppendAction, HeaderValue, HeaderValueOption,
-    QueryParameter,
+use envoy_types::ext_authz::v3::pb::{
+    Address, Authorization, AuthorizationServer, CheckRequest, CheckResponse, DeniedHttpResponse,
+    HeaderAppendAction, HeaderValue, HeaderValueOption, HttpResponse, HttpStatus, HttpStatusCode,
+    OkHttpResponse, QueryParameter,
 };
-use pb::envoy::r#type::v3::HttpStatus;
-use pb::envoy::service::auth::v3::{
-    authorization_server::{Authorization, AuthorizationServer},
-    check_response::HttpResponse,
-    CheckRequest, CheckResponse, DeniedHttpResponse, OkHttpResponse,
-};
-use pb::google::rpc;
+use envoy_types::pb::google::rpc;
 
 #[derive(Default)]
 struct MyServer;
@@ -43,7 +36,9 @@ impl Authorization for MyServer {
         println!("{:?}", request);
 
         let denied_http_response = DeniedHttpResponse {
-            status: Some(HttpStatus { code: 403 }),
+            status: Some(HttpStatus {
+                code: HttpStatusCode::Forbidden.into(),
+            }),
             headers: Vec::new(),
             body: "FORBIDDEN".to_string(),
         };
@@ -64,7 +59,6 @@ impl Authorization for MyServer {
                             header: Some(HeaderValue {
                                 key: "extauthz-header".to_string(),
                                 value: "extauthz-value".to_string(),
-                                raw_value: Vec::new(),
                             }),
                             append: None, // Deprecated field
                             append_action: HeaderAppendAction::AddIfAbsent.into(),
