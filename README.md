@@ -1,4 +1,4 @@
-# Envoy's ExtAuthz with a Rust gRPC Authorization Server
+# Envoy External Authorization Server (ext_authz) in Rust
 
 This is an example showing how to implement an [Envoy External Authorization]
 gRPC Server written in Rust.
