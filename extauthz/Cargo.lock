@@ -138,9 +138,9 @@ checksum = "a26ae43d7bcc3b814de94796a5e736d4029efb0ee900c12e2d54c993ad1a1e07"
 
 [[package]]
 name = "envoy-types"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "787ef98996629291a3b881785b5a1ee1a96d40be50c62ab51295086afc7a3086"
+checksum = "993a998c2701c8e25cfb4c20dd45a88a31d8ef51c37964ada239f735967a5f59"
 dependencies = [
  "prost",
  "tonic",
@@ -151,7 +151,6 @@ name = "extauthz"
 version = "0.1.0"
 dependencies = [
  "envoy-types",
- "prost",
  "tokio",
  "tonic",
 ]
