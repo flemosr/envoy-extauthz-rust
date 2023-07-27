@@ -97,21 +97,9 @@ The valid request log should be similar to:
 extauthz-rust.nginx  | ENVOY-INTERNAL-IP - - [21/Jul/2023:14:27:49 +0000] "GET /?extauthz-query-param=extauthz-query-value HTTP/1.1" 200 22 "-" "curl/7.88.1" "CLIENT-IP" "extauthz-value"
 ```
 
-## Proto File Sources
-
-+ [envoy/*](https://github.com/envoyproxy/envoy/blob/5badcfa6b6edd1868a7f62e446098d20365a87fa/api/envoy)  
-+ [google/rpc/*](https://github.com/googleapis/googleapis/blob/07457fcce42d9521375a2e0bd5dcfb1785279955/google/rpc)  
-+ [udpa/annotations/*](https://github.com/cncf/udpa/blob/c52dc94e7fbe6449d8465faaeda22c76ca62d4ff/udpa/annotations)  
-+ [validate/validate.proto](https://github.com/bufbuild/protoc-gen-validate/blob/04e84b10ceef0008673460bcf06f036b2add8d80/validate/validate.proto)  
-+ [xds/*](https://github.com/cncf/xds/blob/e9ce68804cb4e64cab5a52e3c8baf840d4ff87b7/xds)  
-
 ## License
 
-Except as otherwise noted (in individual files), this project is licensed under 
-the [MIT License](LICENSE).
-
-Some files include explicit copyright notices and license notices. In such
-cases, they are licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+This project is licensed under the [MIT License](LICENSE).
 
 ## Contribution
 
