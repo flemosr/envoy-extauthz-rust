@@ -1,32 +1,30 @@
-use std::collections::HashMap;
 use std::env;
-
 use tonic::{transport::Server, Request, Response, Status};
 
 use envoy_types::ext_authz::v3::pb::{
-    Address, Authorization, AuthorizationServer, CheckRequest, CheckResponse, DeniedHttpResponse,
-    HeaderAppendAction, HeaderValue, HeaderValueOption, HttpResponse, HttpStatus, HttpStatusCode,
-    OkHttpResponse, QueryParameter,
+    Authorization, AuthorizationServer, CheckRequest, CheckResponse, HttpStatusCode,
 };
-use envoy_types::pb::google::rpc;
+use envoy_types::ext_authz::v3::{
+    CheckRequestExt, CheckResponseExt, DeniedHttpResponseBuilder, OkHttpResponseBuilder,
+};
 
 #[derive(Default)]
 struct MyServer;
 
-fn get_external_request_data(
-    request: Request<CheckRequest>,
-) -> Option<(String, HashMap<String, String>)> {
-    let attributes = request.into_inner().attributes?;
+fn denied_response(status: Status) -> Result<Response<CheckResponse>, Status> {
+    let mut denied_http_response = DeniedHttpResponseBuilder::new();
+    denied_http_response
+        .set_http_status(HttpStatusCode::Forbidden)
+        .add_header("downstream-header", "downstream-header-value", None, false)
+        .set_body("FORBIDDEN");
 
-    let client_address = match attributes.source?.address?.address? {
-        Address::SocketAddress(socket_address) => socket_address.address,
-        _ => return None,
-    };
-    let client_headers = attributes.request?.http?.headers;
+    let mut denied_response = CheckResponse::with_status(status);
+    denied_response.set_http_response(denied_http_response);
 
-    Some((client_address, client_headers))
+    Ok(Response::new(denied_response))
 }
 
+#[allow(unused)]
 #[tonic::async_trait]
 impl Authorization for MyServer {
     async fn check(
@@ -35,77 +33,62 @@ impl Authorization for MyServer {
     ) -> Result<Response<CheckResponse>, Status> {
         println!("{:?}", request);
 
-        let denied_http_response = DeniedHttpResponse {
-            status: Some(HttpStatus {
-                code: HttpStatusCode::Forbidden.into(),
-            }),
-            headers: Vec::new(),
-            body: "FORBIDDEN".to_string(),
-        };
+        let request = request.into_inner();
 
-        let mut http_response = HttpResponse::DeniedResponse(denied_http_response);
+        let client_address = request
+            .get_client_address()
+            .ok_or_else(|| Status::invalid_argument("client address not provided by envoy"))?;
 
-        if let Some((client_address, client_headers)) = get_external_request_data(request) {
-            println!("\n{:?}", client_address);
-            println!("{:?}", client_headers);
+        // Validate `client_address`
+        // ...
+        // Possible to implement some basic rate-limiting
 
-            if let Some(authorization) = client_headers.get("authorization") {
-                println!("{:?}", authorization);
+        let client_headers = request
+            .get_client_headers()
+            .ok_or_else(|| Status::invalid_argument("client headers not populated by envoy"))?;
 
-                if authorization == "Bearer valid-token" {
-                    #[allow(deprecated)]
-                    let ok_http_response = OkHttpResponse {
-                        headers: vec![HeaderValueOption {
-                            header: Some(HeaderValue {
-                                key: "extauthz-header".to_string(),
-                                value: "extauthz-value".to_string(),
-                            }),
-                            append: None, // Deprecated field
-                            append_action: HeaderAppendAction::AddIfAbsent.into(),
-                            keep_empty_value: false,
-                        }],
-                        headers_to_remove: Vec::new(),
-                        dynamic_metadata: None, // Deprecated field
-                        response_headers_to_add: Vec::new(),
-                        query_parameters_to_remove: Vec::new(),
-                        query_parameters_to_set: vec![QueryParameter {
-                            key: "extauthz-query-param".to_string(),
-                            value: "extauthz-query-value".to_string(),
-                        }],
-                    };
-
-                    http_response = HttpResponse::OkResponse(ok_http_response);
-                }
+        let client_id = if let Some(authorization) = client_headers.get("authorization") {
+            // Validate `authorization`
+            // ...
+            if authorization != "Bearer valid-token" {
+                return denied_response(Status::unauthenticated(
+                    "authorization token is not valid",
+                ));
             }
-        }
 
-        let response_status = match http_response {
-            HttpResponse::OkResponse(_) => rpc::Status {
-                code: rpc::Code::Ok.into(),
-                message: "request ok".to_string(),
-                details: Vec::new(),
-            },
-            HttpResponse::DeniedResponse(_) => rpc::Status {
-                code: rpc::Code::Unauthenticated.into(),
-                message: "request denied".to_string(),
-                details: Vec::new(),
-            },
+            "client_id_value"
+        } else {
+            return denied_response(Status::unauthenticated(
+                "authorization header not available",
+            ));
         };
 
-        let response = CheckResponse {
-            status: Some(response_status),
-            dynamic_metadata: None,
-            http_response: Some(http_response),
-        };
+        let path = client_headers
+            .get(":path")
+            .ok_or_else(|| Status::invalid_argument(":path header not populated by envoy"))?;
 
-        Ok(Response::new(response))
+        // Validate `path`
+        // ...
+        // Good place to check for cases of `Status::permission_denied`
+        // since `client_id` could be known
+
+        // Requests that reached this point are valid
+
+        let mut ok_http_response = OkHttpResponseBuilder::new();
+        ok_http_response
+            .add_header("extauthz-header", "extauthz-value", None, false)
+            .set_query_parameter("extauthz-query-param", "extauthz-query-value");
+
+        let mut ok_response = CheckResponse::with_status(Status::ok("request is valid"));
+        ok_response.set_http_response(ok_http_response);
+
+        Ok(Response::new(ok_response))
     }
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let server_port = env::var("SERVER_PORT").expect("$SERVER_PORT not set");
-
+    let server_port = env::var("SERVER_PORT").unwrap_or("50051".into());
     let addr = format!("0.0.0.0:{server_port}").parse().unwrap();
     let server = MyServer::default();
 
