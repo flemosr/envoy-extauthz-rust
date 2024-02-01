@@ -94,7 +94,7 @@ The valid request log should be similar to:
 
 ```log
 ...
-extauthz-rust.nginx  | ENVOY-INTERNAL-IP - - [21/Jul/2023:14:27:49 +0000] "GET /?extauthz-query-param=extauthz-query-value HTTP/1.1" 200 22 "-" "curl/7.88.1" "CLIENT-IP" "extauthz-value"
+extauthz-rust.nginx  | 192.168.128.3 - - [01/Feb/2024:14:32:29 +0000] "GET /?extauthz-query-param=extauthz-query-value HTTP/1.1" 200 22 "-" "curl/8.4.0" "192.168.65.1" "extauthz-value"
 ```
 
 ## License
