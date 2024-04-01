@@ -1,9 +1,11 @@
 # Envoy External Authorization Server (ext_authz) in Rust
 
 This is an example showing how to implement an [Envoy External Authorization]
-gRPC Server written in Rust.
+gRPC Server written in Rust. If you are working on a more complex implementation
+including rate-limiting, consider checking out the [envoy-extauthz-rust-rate-limit]
+repository.
 
-In consists of an `envoy` service mapped to a localhost port, connected through
+Here, we create an `envoy` service mapped to a localhost port, connected through
 internal docker networks to an `extauthz` service, and to a `nginx` service that
 serves plain text.
 
@@ -14,6 +16,7 @@ added to it. If not, `envoy` sends the `extauthz` denied response back to the
 client.
 
 [Envoy External Authorization]: https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/ext_authz_filter
+[envoy-extauthz-rust-rate-limit]: https://github.com/flemosr/envoy-extauthz-rust-rate-limit
 
 ## Run the Example
 
