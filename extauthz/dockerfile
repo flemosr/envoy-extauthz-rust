@@ -1,4 +1,4 @@
-FROM rust:1.70-buster as builder
+FROM rust:1.70-buster AS builder
 
 WORKDIR /usr/src
 
