@@ -7,6 +7,6 @@ license = "MIT"
 publish = false
 
 [dependencies]
-envoy-types = "0.5"
-tokio = { version = "1.39", features = ["macros", "rt-multi-thread"] }
-tonic = "0.12"
+envoy-types = "0.5.1"
+tokio = { version = "1.41", features = ["macros", "rt-multi-thread"] }
+tonic = "0.12.3"
